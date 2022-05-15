@@ -1,6 +1,8 @@
 <template>
   <div class="box">
-    <h1>Grattage</h1>
+    <figure>
+      <img :src="img" alt="Logo" />
+    </figure>
 
     <form class="form-box" @submit.prevent.enter="signIn">
       <div>
@@ -8,7 +10,7 @@
         <div class="form-row">
           <label>E-mail: </label>
           <div class="input-form">
-          <input type="email" name="email" v-model="login.email" autocomplete="username"/>
+            <input type="email" name="email" v-model="login.email" autocomplete="username"/>
           </div>
         </div>
 
@@ -16,7 +18,7 @@
         <div class="form-row">
           <label>Senha: </label>
           <div class="input-form">
-          <input type="password" name="password" v-model="login.password" autocomplete="current-password"/>
+            <input type="password" name="password" v-model="login.password" autocomplete="current-password"/>
           </div>
         </div>
       </div>
@@ -32,17 +34,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, ref } from 'vue'
+import { defineComponent, Ref, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Login } from "@/types/index"
 import { useToast } from "vue-toastification"
 import AuthenticationService from "@/services/AuthenticationService"
+import store from "@/store/index"
+import VueJwtDecode from 'vue-jwt-decode'
 
 export default defineComponent({
   setup() {
     const login: Ref<Login> = ref({ email: '', password: '' })
     const toast  = useToast()
     const router = useRouter()
+    const img = computed(() => require("@/assets/imgs/logo.png"))
 
     function hasLogin (login: Login) : boolean {
       if (login.email == "" || login.password == '')
@@ -57,8 +62,14 @@ export default defineComponent({
           .then((response) => {
             if (!response.err_status) {
               localStorage.setItem("__chave_usuario", response.token)
+              const user = VueJwtDecode.decode(response.token)
+              store.setUser({
+                name: user.name,
+                username: user.username,
+                avatar: user.avatar,
+                email: user.email
+              })
               toast.success("Usuário logado")
-
               router.push({ name: 'home' })
             } else {
               toast.error(`Ocorreu um erro: ${ response.message }`)
@@ -71,13 +82,10 @@ export default defineComponent({
 
     return {
       login,
+      img,
       signIn
     }    
   },
 })
 </script>
-
-<style lang="scss" scoped>
-
-</style>
 

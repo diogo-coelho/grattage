@@ -8,13 +8,5 @@ body {
     box-sizing: border-box;
     font-family: $font-family-body;
     font-size: $font-family-body-12;
-}
-
-input {
-    @include input_default;
-}
-
-input[type='password'] {
-    font: small-caption;
-    font-size: $font-family-heading-16;
+    color: $dark;
 }

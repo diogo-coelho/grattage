@@ -6,8 +6,8 @@
 import { defineComponent, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useToast } from "vue-toastification"
-import store from "./store/index"
 import VueJwtDecode from 'vue-jwt-decode'
+import store from "@/store/index"
 
 export default defineComponent({
   setup() {
@@ -41,7 +41,6 @@ export default defineComponent({
           toast.error("Sessão expirada")
 
         } else {
-          
           store.setUser({
             name: user.name,
             username: user.username,
@@ -49,7 +48,6 @@ export default defineComponent({
             email: user.email
           })
           router.push({ name: route.name || 'home' })
-
         }
       }
     }

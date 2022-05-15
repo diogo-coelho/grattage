@@ -12,7 +12,7 @@ import store from "@/store/index"
 
 export default defineComponent({
     setup() {
-            return {
+        return {
             user: computed(() => store.state.user)
         }
     }
