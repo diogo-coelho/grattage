@@ -1,30 +1,66 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
   <router-view/>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { defineComponent, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useToast } from "vue-toastification"
+import store from "./store/index"
+import VueJwtDecode from 'vue-jwt-decode'
 
-nav {
-  padding: 30px;
+export default defineComponent({
+  setup() {
+    const router = useRouter()
+    const route = useRoute()
+    const toast  = useToast()
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+    function validateSession () : void {
+      const userKey = localStorage.getItem("__chave_usuario")
+      
+      if (!userKey) {
 
-    &.router-link-exact-active {
-      color: #42b983;
+        if (route.name === 'auth') return
+        router.push({ name: 'auth' })
+
+      } else {
+        
+        const user = VueJwtDecode.decode(userKey)
+        if (!user) {
+          
+          localStorage.removeItem("__chave_usuario");
+          router.push({ name: 'auth' })
+          toast.error("Sessão inválida")
+          
+        }
+
+        if (user.iat < Math.floor(Date.now() / 1000)) {
+          
+          localStorage.removeItem("__chave_usuario");
+          router.push({ name: 'auth' })
+          toast.error("Sessão expirada")
+
+        } else {
+          
+          store.setUser({
+            name: user.name,
+            username: user.username,
+            avatar: user.avatar,
+            email: user.email
+          })
+          router.push({ name: route.name || 'home' })
+
+        }
+      }
     }
-  }
-}
+
+    onMounted(() => {
+      validateSession()
+    })
+  },
+})
+</script>
+
+<style lang="scss">
+@import './assets/scss/app.scss';
 </style>

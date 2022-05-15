@@ -1,14 +1,20 @@
-import { createStore } from 'vuex'
+/* eslint-disable */
+import { reactive, readonly } from "vue"
+import { User } from "@/types/index"
 
-export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+export interface State {
+    user: User | null
+}
+
+const state: State = reactive({
+    user: null
 })
+
+const setUser = function (user: User) : void {
+    state.user = user
+}
+
+export default {
+    state: readonly(state),
+    setUser
+}

@@ -2,6 +2,18 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './registerServiceWorker'
 import router from './router'
-import store from './store'
+import Toast, { POSITION } from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
-createApp(App).use(store).use(router).mount('#app')
+const app = createApp(App)
+
+// Toaster
+app.use(Toast, {
+    position: POSITION.TOP_RIGHT,
+    timeout: 1500
+});
+
+// Router
+app.use(router)
+
+app.mount('#app')
