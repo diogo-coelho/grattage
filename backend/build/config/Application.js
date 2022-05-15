@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const cors_1 = __importDefault(require("cors"));
 const AuthenticationRouter_1 = __importDefault(require("../router/AuthenticationRouter"));
 const CustomError_1 = __importDefault(require("../errors/CustomError"));
 /**
@@ -31,6 +32,7 @@ class Application {
     middleware() {
         this._express.use(body_parser_1.default.json());
         this._express.use(body_parser_1.default.urlencoded({ extended: false }));
+        this._express.use((0, cors_1.default)());
     }
     /**
      * Configura as rotas da aplicação

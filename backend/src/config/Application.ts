@@ -2,6 +2,7 @@
 
 import Express from 'express'
 import BodyParser from 'body-parser'
+import cors from 'cors'
 
 import AuthenticationRouter from '../router/AuthenticationRouter'
 import CustomError from '../errors/CustomError'
@@ -34,6 +35,7 @@ class Application {
   private middleware () : void {
     this._express.use(BodyParser.json())
     this._express.use(BodyParser.urlencoded({ extended: false }))
+    this._express.use(cors())
   }
 
   /**
