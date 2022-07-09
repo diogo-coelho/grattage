@@ -8,18 +8,22 @@
       <div>
         <!-- Input de email -->
         <div class="form-row">
-          <label>E-mail: </label>
-          <div class="input-form">
-            <input type="email" name="email" v-model="login.email" autocomplete="username"/>
-          </div>
+          <gtg-input 
+            :inputLabel="`E-mail`" 
+            :inputType="`email`" 
+            :inputName="`email`"
+            :autoComplete="`username`"
+            @value="handleEmail"/>
         </div>
 
         <!-- Input de senha -->
         <div class="form-row">
-          <label>Senha: </label>
-          <div class="input-form">
-            <input type="password" name="password" v-model="login.password" autocomplete="current-password"/>
-          </div>
+          <gtg-input 
+            :inputLabel="`Senha`" 
+            :inputType="`password`" 
+            :inputName="`password`"
+            :autoComplete="`current-password`"
+            @value="handlePassword"/>
         </div>
       </div>
 
@@ -40,14 +44,26 @@ import { Login } from "@/types/index"
 import { useToast } from "vue-toastification"
 import AuthenticationService from "@/services/AuthenticationService"
 import store from "@/store/index"
-import VueJwtDecode from 'vue-jwt-decode'
+import VueJwtDecode from 'vue-jwt-decode';
+import GtgInput from '../shared/GTG-Input.vue'
 
 export default defineComponent({
+  components: {
+    GtgInput
+  },
   setup() {
     const login: Ref<Login> = ref({ email: '', password: '' })
     const toast  = useToast()
     const router = useRouter()
     const img = computed(() => require("@/assets/imgs/logo.png"))
+
+    function handleEmail (email: string) {
+      login.value.email = email
+    }
+
+    function handlePassword (password: string) {
+      login.value.password = password
+    }
 
     function hasLogin (login: Login) : boolean {
       if (login.email == "" || login.password == '')
@@ -57,33 +73,37 @@ export default defineComponent({
     }
 
     function signIn () {
-      if (hasLogin(login.value)) {
-        AuthenticationService.login(login.value)
-          .then((response) => {
-            if (!response.err_status) {
-              localStorage.setItem("__chave_usuario", response.token)
-              const user = VueJwtDecode.decode(response.token)
-              store.setUser({
-                name: user.name,
-                username: user.username,
-                avatar: user.avatar,
-                email: user.email
-              })
-              toast.success("Usuário logado")
-              router.push({ name: 'home' })
-            } else {
-              toast.error(`Ocorreu um erro: ${ response.message }`)
-            }
-          })
-      } else {
-        toast.error("Ocorreu um erro: campos não podem estar vazios")
+      if (!hasLogin(login.value)) {
+        toast.error(`Ocorreu um erro: Parâmetros incorretos`)
+        return
       }
+        
+      AuthenticationService.login(login.value)
+        .then((response) => {
+          if (response.err_status) {
+            toast.error(`Ocorreu um erro: ${ response.message }`)
+            return
+          }
+            
+          localStorage.setItem("__chave_usuario", response.token)
+          const user = VueJwtDecode.decode(response.token)
+          store.setUser({
+            name: user.name,
+            username: user.username,
+            avatar: user.avatar,
+            email: user.email
+          })
+          toast.success("Usuário logado")
+          router.push({ name: 'home' })
+        })
     }
 
     return {
       login,
       img,
-      signIn
+      signIn,
+      handleEmail,
+      handlePassword
     }    
   },
 })

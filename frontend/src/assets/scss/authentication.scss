@@ -5,15 +5,16 @@
 /* ------------------------------------------------------------------ */
 
 .container-auth {
-    width: 100%;
-    height: 100vh;
+    width: calc(100% - 40px);
+    height: calc(100vh - 40px);
     background-color: $secondary-color;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 
     .box {
-        width: 500px;
+        width: 400px;
         height: auto;
         padding: 30px;
         box-shadow: $drop-shadow;
@@ -21,7 +22,7 @@
         background-color: $white;
 
         figure {
-            width: 150px;
+            width: 120px;
             margin: auto;
 
             img {
@@ -30,23 +31,50 @@
         }
 
         form {
+            margin-top: 30px;
+            
             label {
                 font-size: $font-family-body-14;
                 font-weight: $font-weight-600;
-                color: $dark;
+                color: $gray_6;
             }
 
-            .input-form {
-                margin-top: 10px;
+            .form-row {
+                margin-bottom: 15px;
 
-                input {
-                    @include input_default;
-                    margin-bottom: 15px;
+                .input-form {
+                    margin-top: 10px;
+                    position: relative;
+
+                    input {
+                        @include input_default;
+                    }
+
+                    input[type='password'] {
+                        font: small-caption;
+                        font-size: $font-family-heading-16;
+                    }
+
+                    i {
+                        position: absolute;
+                        right: 12px;
+                        top: 11px;
+                    }
+
+                    .i-custom-font-check {
+                        color: $success-color;
+                    }
+
+                    .glyphicon-font-awesome-close {
+                        color: $danger-color;
+                    }
                 }
 
-                input[type='password'] {
-                    font: small-caption;
-                    font-size: $font-family-heading-16;
+                .message {
+                    font-size: 11px;
+                    color: $danger-color;
+                    padding-top: 5px;
+                    display: block;
                 }
             }
 
