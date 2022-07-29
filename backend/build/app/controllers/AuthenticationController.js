@@ -17,7 +17,7 @@ const path_1 = __importDefault(require("path"));
 const FormattedDate_1 = __importDefault(require("../../utils/FormattedDate"));
 const UserDAO_1 = __importDefault(require("../models/UserDAO"));
 const User_1 = __importDefault(require("../models/User"));
-const CustomError_1 = __importDefault(require("../../errors/CustomError"));
+const AuthenticationControllerError_1 = __importDefault(require("../../errors/AuthenticationControllerError"));
 const JsonWebToken_1 = __importDefault(require("../middleware/JsonWebToken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 class AuthenticationController {
@@ -41,7 +41,7 @@ class AuthenticationController {
                     ]
                 });
                 if (userHasAlreadyBeenCreated.length > 0) {
-                    throw new CustomError_1.default(409, 'Usuário existente');
+                    throw new AuthenticationControllerError_1.default(409, 'Usuário existente');
                 }
                 const record = yield AuthenticationController._userDAO.model.create(Object.assign(Object.assign({}, user), { created_at: new Date(), updated_at: new Date() }));
                 console.log(`[ ${FormattedDate_1.default.formattedDate} ] : Fim da requisição de criação de usuário`);
@@ -63,7 +63,7 @@ class AuthenticationController {
                 console.log(`[ ${FormattedDate_1.default.formattedDate} ] : Nova requisição de login`);
                 fs_1.default.appendFileSync(path_1.default.join(__dirname, '../../../logs/authentication.log'), `[ ${FormattedDate_1.default.formattedDate} ] : Nova requisição de login \r\n`);
                 if (!req.body.password || (!req.body.username && !req.body.email))
-                    throw new CustomError_1.default(400, 'Parâmetros incorretos');
+                    throw new AuthenticationControllerError_1.default(400, 'Parâmetros incorretos');
                 const user = new User_1.default();
                 if (req.body.username)
                     user.setUserName(req.body.username);
@@ -76,10 +76,10 @@ class AuthenticationController {
                     ]
                 });
                 if (!userFound)
-                    throw new CustomError_1.default(401, 'Credenciais inválidas');
+                    throw new AuthenticationControllerError_1.default(401, 'Credenciais inválidas');
                 const isValidPassword = yield bcrypt_1.default.compare(req.body.password, userFound._password);
                 if (!isValidPassword)
-                    throw new CustomError_1.default(401, 'Credenciais inválidas');
+                    throw new AuthenticationControllerError_1.default(401, 'Credenciais inválidas');
                 const token = new JsonWebToken_1.default().getToken({ name: userFound._name, username: userFound._username, email: userFound._email });
                 console.log(`[ ${FormattedDate_1.default.formattedDate} ] : Fim da requisição de login`);
                 fs_1.default.appendFileSync(path_1.default.join(__dirname, '../../../logs/authentication.log'), `[ ${FormattedDate_1.default.formattedDate} ] : Fim da requisição de login \r\n`);

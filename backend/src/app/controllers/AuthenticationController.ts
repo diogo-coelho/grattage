@@ -7,7 +7,7 @@ import { Request, Response } from 'express'
 import date from '../../utils/FormattedDate'
 import UserDAO from '../models/UserDAO'
 import User from '../models/User'
-import CustomError from '../../errors/CustomError'
+import AuthenticationControllerError from '../../errors/AuthenticationControllerError'
 import JsonWebToken from '../middleware/JsonWebToken'
 import bcrypt from 'bcrypt'
 
@@ -36,7 +36,7 @@ class AuthenticationController {
       })
 
       if (userHasAlreadyBeenCreated.length > 0) {
-        throw new CustomError(409, 'Usuário existente')
+        throw new AuthenticationControllerError(409, 'Usuário existente')
       }
 
       const record = await AuthenticationController._userDAO.model.create({
@@ -63,7 +63,7 @@ class AuthenticationController {
       console.log(`[ ${date.formattedDate} ] : Nova requisição de login`)
       fs.appendFileSync(path.join(__dirname, '../../../logs/authentication.log'), `[ ${date.formattedDate} ] : Nova requisição de login \r\n`)
 
-      if (!req.body.password || (!req.body.username && !req.body.email)) throw new CustomError(400, 'Parâmetros incorretos')
+      if (!req.body.password || (!req.body.username && !req.body.email)) throw new AuthenticationControllerError(400, 'Parâmetros incorretos')
 
       const user = new User()
       if (req.body.username) user.setUserName(req.body.username)
@@ -76,9 +76,9 @@ class AuthenticationController {
         ]
       })
 
-      if (!userFound) throw new CustomError(401, 'Credenciais inválidas')
+      if (!userFound) throw new AuthenticationControllerError(401, 'Credenciais inválidas')
       const isValidPassword = await bcrypt.compare(req.body.password, userFound._password)
-      if (!isValidPassword) throw new CustomError(401, 'Credenciais inválidas')
+      if (!isValidPassword) throw new AuthenticationControllerError(401, 'Credenciais inválidas')
 
       const token = new JsonWebToken().getToken({ name: userFound._name, username: userFound._username, email: userFound._email })
 

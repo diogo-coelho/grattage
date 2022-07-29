@@ -14,17 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const CustomError_1 = __importDefault(require("../../errors/CustomError"));
+const UserModelError_1 = __importDefault(require("../../errors/UserModelError"));
 class User {
     setName(name) {
         if (name.trim() === '') {
-            throw new CustomError_1.default(400, 'O nome não pode estar vazio');
+            throw new UserModelError_1.default(400, 'O nome não pode estar vazio');
         }
         if (name.length > 5 && name.length < 50) {
             this._name = name;
         }
         else {
-            throw new CustomError_1.default(400, 'O nome de usuário deve ter entre 5 e 50 caracteres');
+            throw new UserModelError_1.default(400, 'O nome de usuário deve ter entre 5 e 50 caracteres');
         }
     }
     setAvatar(avatar) {
@@ -34,13 +34,13 @@ class User {
         // eslint-disable-next-line
         const re = /^(?=.*[a-z])([a-z]{3,10})+([.\-_]{0,1})+([a-z0-9]{3,20})$/;
         if (username.length < 3 || username.length > 50) {
-            throw new CustomError_1.default(400, 'O username deve ter entre 3 e 50 caracteres');
+            throw new UserModelError_1.default(400, 'O username deve ter entre 3 e 50 caracteres');
         }
         if (re.test(username)) {
             this._username = username;
         }
         else {
-            throw new CustomError_1.default(400, 'O username deve ter apenas letras minúsculas, números, ponto, hífen ou underline');
+            throw new UserModelError_1.default(400, 'O username deve ter apenas letras minúsculas, números, ponto, hífen ou underline');
         }
     }
     setEmail(email) {
@@ -50,7 +50,7 @@ class User {
             this._email = email;
         }
         else {
-            throw new CustomError_1.default(400, 'E-mail inválido');
+            throw new UserModelError_1.default(400, 'E-mail inválido');
         }
     }
     setPassword(password) {
@@ -63,7 +63,7 @@ class User {
                 this._password = passwordHashed;
             }
             else {
-                throw new CustomError_1.default(400, 'Senha inválida. A senha precisa ter entre 8 e 10 caracteres, com ao menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial');
+                throw new UserModelError_1.default(400, 'Senha inválida. A senha precisa ter entre 8 e 10 caracteres, com ao menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial');
             }
         });
     }

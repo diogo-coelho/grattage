@@ -5,7 +5,7 @@ import BodyParser from 'body-parser'
 import cors from 'cors'
 
 import AuthenticationRouter from '../router/AuthenticationRouter'
-import CustomError from '../errors/CustomError'
+import RouterError from '../errors/CustomError'
 
 /**
  * Classe responsável por instanciar a aplicação do Express
@@ -46,7 +46,7 @@ class Application {
 
     this._express.use('/api/v1/', router)
     this._express.use('/api/v1/authentication', AuthenticationRouter)
-    this._express.use('*', () => { throw new CustomError(404, 'Endpoint não encontrado') })
+    this._express.use('*', () => { throw new RouterError(404, 'Endpoint não encontrado') })
   }
 }
 

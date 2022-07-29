@@ -15,6 +15,7 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "no-useless-constructor": 0
     },
     "globals": {
         "NodeJS": true
