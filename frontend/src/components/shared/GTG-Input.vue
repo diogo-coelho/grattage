@@ -18,7 +18,7 @@
                 @blur="setInputValue($event)" />
             <i :class="{ 
                 'i-custom-font-check': success ?? '',
-                'glyphicon-font-awesome-close' : message ?? '' }"></i>
+                'glyphicon-font-awesome-close' : message ?? '' }" />
         </div>
         <div v-if="message">
             <span class="message">{{ message }}</span>
