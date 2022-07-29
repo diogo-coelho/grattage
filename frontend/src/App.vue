@@ -15,7 +15,11 @@ export default defineComponent({
     const route = useRoute()
     const toast  = useToast()
 
+    /**
+     * Função que valida a sessão do usuário
+     */
     function validateSession () : void {
+      /** Token do usuário armazenado em localStorage */
       const userKey = localStorage.getItem("__chave_usuario")
       
       if (!userKey) {
@@ -24,7 +28,7 @@ export default defineComponent({
         router.push({ name: 'auth' })
 
       } else {
-        
+        /** Informações do usuário decodificadas do token armazenado em localStorage */
         const user = VueJwtDecode.decode(userKey)
         if (!user) {
           
@@ -34,12 +38,14 @@ export default defineComponent({
           
         }
 
+        // Verifico se a sessão já está expirada e redireciono para a tela de Login
         if (user.iat < Math.floor(Date.now() / 1000)) {
           
           localStorage.removeItem("__chave_usuario");
           router.push({ name: 'auth' })
           toast.error("Sessão expirada")
-
+        /* Caso contrário, as informações de usuário são armazenadas na store e o 
+          usuário é redirecionado para a view Home */
         } else {
           store.setUser({
             name: user.name,

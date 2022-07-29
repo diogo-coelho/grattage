@@ -13,6 +13,7 @@
             :inputType="`email`" 
             :inputName="`email`"
             :autoComplete="`username`"
+            :inputError="inputError"
             @value="handleEmail"/>
         </div>
 
@@ -23,6 +24,7 @@
             :inputType="`password`" 
             :inputName="`password`"
             :autoComplete="`current-password`"
+            :inputError="inputError"
             @value="handlePassword"/>
         </div>
       </div>
@@ -38,9 +40,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, Ref, ref, computed } from 'vue'
+import { defineComponent, Ref, ref, computed, ComputedRef } from 'vue'
 import { useRouter } from 'vue-router'
-import { Login } from "@/types/index"
+import { Login, InputError } from "@/types/index"
 import { useToast } from "vue-toastification"
 import AuthenticationService from "@/services/AuthenticationService"
 import store from "@/store/index"
@@ -53,26 +55,66 @@ export default defineComponent({
   },
   setup() {
     const login: Ref<Login> = ref({ email: '', password: '' })
-    const toast  = useToast()
-    const router = useRouter()
-    const img = computed(() => require("@/assets/imgs/logo.png"))
-
-    function handleEmail (email: string) {
+    const inputError: Ref<InputError>  = ref({ inputType: undefined, messageError: undefined })
+    const img: ComputedRef<string> = computed(() => require("@/assets/imgs/logo.png"))
+    const toast: any  = useToast()
+    const router: any = useRouter()
+    
+    /**
+     * Função que recebe o valor emitido pelo input e carrega o 
+     * atributo email dentro do objeto Login
+     * @param {string} email valor de email recebido via emit
+     */
+    function handleEmail (email: string) : void {
       login.value.email = email
     }
 
+    /**
+     * Função que recebe o valor emitido pelo input e carrega o
+     * atributo password dentro do objeto Login
+     * @param {string} password - valor de senha recebido via emit
+     */
     function handlePassword (password: string) {
       login.value.password = password
     }
 
+    /**
+     * Função que verifica se um dos atrinutos de Login é uma
+     * string vazia, e retorna um valor booleano
+     * @param {Login} login - {email: string, password: string}
+     * @returns {boolean} boolean
+     */
     function hasLogin (login: Login) : boolean {
-      if (login.email == "" || login.password == '')
+      if (login.email == "" && login.password == "") {
+        inputError.value = {inputType: ['email', 'password'], messageError: 'Campos não podem ficar vazios'}
         return false
+      }
+
+      if (login.email == "") {
+        inputError.value = {inputType: ['email'], messageError: 'Campo e-mail não pode ficar vazio'}
+        return false
+      }
+
+      if (login.password == "") {
+        inputError.value = {inputType: ['password'], messageError: 'Campo password não pode ficar vazio'}
+        return false
+      }  
       
+      if (!login.email || !login.password) 
+        return false
+        
       return true
     }
 
-    function signIn () {
+    /**
+     * Função que carrega as informações da variável Login e dispara 
+     * o serviço AuthenticationService, acessando o método de login.
+     * Caso a resposta seja positiva, o valor do token é armazenado 
+     * em localStorage, e os dados decodificados são armazenados no
+     * vuex, na variável user. Por fim, a aplicação redireciona o usuário para 
+     * a rota '/home'
+     */
+    function signIn () : void {
       if (!hasLogin(login.value)) {
         toast.error(`Ocorreu um erro: Parâmetros incorretos`)
         return
@@ -103,7 +145,8 @@ export default defineComponent({
       img,
       signIn,
       handleEmail,
-      handlePassword
+      handlePassword,
+      inputError
     }    
   },
 })

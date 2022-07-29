@@ -10,7 +10,7 @@ const app = createApp(App)
 // Toaster
 app.use(Toast, {
     position: POSITION.TOP_RIGHT,
-    timeout: 1500
+    timeout: 3000
 });
 
 // Router

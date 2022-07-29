@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/Connection';
-import { Login } from "@/types/index";
+import { HttpResponseError, Login } from "@/types/index";
 
 export default {
     login (login: Login) {
@@ -7,11 +7,24 @@ export default {
             .then((response) => {
                 return response.data;
             })
-            .catch((err) => {
-                return { 
-                    err_status: err.response.status, 
-                    message: err.response.data.message
-                };
+            .catch((err: any) => {
+                return this.handleHTTPResponseError(err.response?.data)
             });
+    },
+    handleHTTPResponseError(err: HttpResponseError) {
+        switch (err.statusCode) {
+            case 401:
+                return ({
+                    err_status: true, 
+                    message: "Usuário não autorizado"
+                })
+
+            default:
+                return ({
+                    err_status: true, 
+                    message: "Ocorreu um erro inesperado"
+                })
+            
+        }
     }
 }

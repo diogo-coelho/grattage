@@ -13,8 +13,8 @@
                 :value="inputValue"
                 :autocomplete="autoComplete"
                 @click="clearInputStatus()"
-                @focus="handleClearInput($event, $event.target)"
-                @keyup="handleClearInput($event, $event.target)"
+                @focus="handleClearInput($event)"
+                @keyup="handleClearInput($event)"
                 @blur="setInputValue($event)" />
             <i :class="{ 
                 'i-custom-font-check': success ?? '',
@@ -27,20 +27,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, Ref, ref, SetupContext } from "vue";
-
-type InputType = 
-    | 'text'
-    | 'email'
-    | 'password'
-    | 'number'
-    | 'date';
+import { defineComponent, PropType, Ref, ref, SetupContext, watch } from "vue";
+import { InputType, InputError } from "@/types/index";
 
 interface Props {
     inputType: string,
     inputName: string;
     inputLabel?: string;
     autoComplete?: string;
+    inputError?: InputError;
 }
 
 export default defineComponent({
@@ -58,42 +53,68 @@ export default defineComponent({
         },
         autoComplete: {
             type: String
+        },
+        inputError: {
+            type: Object as PropType<InputError>
         }
     },
     emit: ['value'],
     setup (props: Props, {emit}: SetupContext) {
-        const inputValue: Ref<string> = ref("");
+        const inputValue: Ref<string> = ref("")
         const message: Ref<string|null> = ref(null)
         const success: Ref<boolean> = ref(false)
 
+        watch(() => props.inputError, () => {
+            if (props.inputError?.inputType?.includes(props.inputName)) {
+                message.value = (props.inputError.messageError as string)
+                success.value = false
+            }
+        })
+
+        /**
+         * Função responsável por limpar os status das variáveis message e success
+         */
         function clearInputStatus () {
             message.value = null
             success.value = false
         }
 
-        function handleClearInput (event: Event, target: EventTarget | null) : void {
-            let element = (target as unknown as HTMLInputElement).value;
+        /**
+         * Função que limpa o estado e a mensagem de erro do input caso alguma tecla 
+         * seja pressionada ou o focus passe para esse input 
+         * @param {Event} event - evento disparado pelo input
+         */
+        function handleClearInput (event: Event) : void {
             let key = (event as unknown as KeyboardEvent).key;
 
-            if (element === "" && !!key && (key === 'Backspace' || key === 'Delete' || key === 'Tab')) {
-                message.value = null
-                success.value = false
+            if (!!key && (key === 'Backspace' || key === 'Delete' || key === 'Tab')) {
+                clearInputStatus();
             }
         }
 
+        /**
+         * Função responsável por receber o valor da tag input e emití-la para
+         * o componente pai no qual foi renderizado
+         * @param {Event} event evento disparado pela tag input
+         */
         function setInputValue (event: Event) : void {
             inputValue.value = (event.target as HTMLInputElement).value
             if (validateInputValue()) {
                 emit("value", inputValue.value)
             } else {
-                emit("value", "")
+                emit("value", undefined)
             }
         }
 
+        /**
+         * Função que verifica se o email recebido via parâmetro tem formato válido
+         * @param {string} email email inserido no input
+         * @returns boolean 
+         */
         function isEmailValid (email: string) : boolean {
             if (email === "") {
-                message.value = "Campo não pode ficar vazio"
-                success.value = false
+                //message.value = "Campo não pode ficar vazio"
+                //success.value = false
                 return false
             }
 
@@ -110,10 +131,15 @@ export default defineComponent({
             return false
         }
 
+        /**
+         * Função que verifica se a senha passada como parâmetro tem o formato válido
+         * @param {string} password - senha inserida no input
+         * @returns boolean
+         */
         function isPasswordValid (password: string) : boolean {
             if (password === "") {
-                message.value = "Campo não pode ficar vazio"
-                success.value = false
+                //message.value = "Campo não pode ficar vazio"
+                //success.value = false
                 return false
             }
 
@@ -130,6 +156,10 @@ export default defineComponent({
             return false
         }
 
+        /**
+         * Função que valida o valor do input de acordo com o tipo (email, password, text)
+         * @returns boolean
+         */
         function validateInputValue () : boolean {
             switch (props.inputType) {
                 case 'email': 
