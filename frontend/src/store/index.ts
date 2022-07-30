@@ -10,7 +10,7 @@ const state: State = reactive({
     user: null
 })
 
-const setUser = function (user: User) : void {
+const setUser = function (user: User | null) : void {
     state.user = user
 }
 

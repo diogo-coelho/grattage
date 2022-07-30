@@ -7,7 +7,7 @@
 .container-auth {
     width: calc(100% - 40px);
     height: calc(100vh - 40px);
-    background-color: $secondary-color;
+    background-image: linear-gradient(to bottom right, $secondary-color 0%, $primary-color 95%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -61,11 +61,11 @@
                         top: 11px;
                     }
 
-                    .i-custom-font-check {
+                    .fa-icon-check {
                         color: $success-color;
                     }
 
-                    .glyphicon-font-awesome-close {
+                    .fa-icon-close {
                         color: $danger-color;
                     }
                 }

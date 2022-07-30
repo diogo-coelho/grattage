@@ -31,7 +31,7 @@
 
       <!-- Botão de Login -->
       <div>
-        <button type="submit" @click.prevent="signIn">
+        <button type="submit" @click.prevent="signIn" :disabled="!login.email || !login.password">
         <span>Entrar</span>
         </button>
       </div>
@@ -42,21 +42,31 @@
 <script lang="ts">
 import { defineComponent, Ref, ref, computed, ComputedRef } from 'vue'
 import { useRouter } from 'vue-router'
-import { Login, InputError } from "@/types/index"
+import { Login, InputError, User } from "@/types/index"
 import { useToast } from "vue-toastification"
 import AuthenticationService from "@/services/AuthenticationService"
 import store from "@/store/index"
 import VueJwtDecode from 'vue-jwt-decode';
 import GtgInput from '../shared/GTG-Input.vue'
 
+interface SetupReturn {
+  login: Ref<Login>
+  img: ComputedRef<string>,
+  signIn: () => void,
+  handleEmail: (email: string) => void,
+  handlePassword: (password: string) => void,
+  inputError: Ref<InputError>
+}
+
 export default defineComponent({
   components: {
     GtgInput
   },
-  setup() {
+  setup() : SetupReturn {
     const login: Ref<Login> = ref({ email: '', password: '' })
     const inputError: Ref<InputError>  = ref({ inputType: undefined, messageError: undefined })
     const img: ComputedRef<string> = computed(() => require("@/assets/imgs/logo.png"))
+    const timer = 750
     const toast: any  = useToast()
     const router: any = useRouter()
     
@@ -65,7 +75,7 @@ export default defineComponent({
      * atributo email dentro do objeto Login
      * @param {string} email valor de email recebido via emit
      */
-    function handleEmail (email: string) : void {
+    function handleEmail (email: string | undefined) : void {
       login.value.email = email
     }
 
@@ -74,36 +84,8 @@ export default defineComponent({
      * atributo password dentro do objeto Login
      * @param {string} password - valor de senha recebido via emit
      */
-    function handlePassword (password: string) {
+    function handlePassword (password: string | undefined) : void {
       login.value.password = password
-    }
-
-    /**
-     * Função que verifica se um dos atrinutos de Login é uma
-     * string vazia, e retorna um valor booleano
-     * @param {Login} login - {email: string, password: string}
-     * @returns {boolean} boolean
-     */
-    function hasLogin (login: Login) : boolean {
-      if (login.email == "" && login.password == "") {
-        inputError.value = {inputType: ['email', 'password'], messageError: 'Campos não podem ficar vazios'}
-        return false
-      }
-
-      if (login.email == "") {
-        inputError.value = {inputType: ['email'], messageError: 'Campo e-mail não pode ficar vazio'}
-        return false
-      }
-
-      if (login.password == "") {
-        inputError.value = {inputType: ['password'], messageError: 'Campo password não pode ficar vazio'}
-        return false
-      }  
-      
-      if (!login.email || !login.password) 
-        return false
-        
-      return true
     }
 
     /**
@@ -115,29 +97,21 @@ export default defineComponent({
      * a rota '/home'
      */
     function signIn () : void {
-      if (!hasLogin(login.value)) {
-        toast.error(`Ocorreu um erro: Parâmetros incorretos`)
-        return
-      }
-        
-      AuthenticationService.login(login.value)
-        .then((response) => {
-          if (response.err_status) {
-            toast.error(`Ocorreu um erro: ${ response.message }`)
-            return
-          }
-            
-          localStorage.setItem("__chave_usuario", response.token)
-          const user = VueJwtDecode.decode(response.token)
-          store.setUser({
-            name: user.name,
-            username: user.username,
-            avatar: user.avatar,
-            email: user.email
+      setTimeout(() => {         
+        AuthenticationService.login(login.value)
+          .then((response) => {
+            if (response.err_status) {
+              toast.error(`Ocorreu um erro: ${ response.message }`)
+              return
+            }
+              
+            localStorage.setItem("__chave_usuario", response.token)
+            const user: User = VueJwtDecode.decode(response.token)
+            store.setUser(user)
+            toast.success("Usuário logado")
+            router.push({ name: 'home' })
           })
-          toast.success("Usuário logado")
-          router.push({ name: 'home' })
-        })
+      }, timer)
     }
 
     return {

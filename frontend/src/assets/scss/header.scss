@@ -4,20 +4,48 @@
 /* ------------------------------------------------------------------ */
 /* ------------------------------------------------------------------ */
 
-nav {
+header {
     display: flex;
-    width: 100%;
+    width: calc(100% - 16px);
+    justify-content: space-between;
+    align-items: center;
     height: 38px;
     padding: 8px;
 
     figure {
-        width: 125px;
+        width: 100px;
         display: flex;
         align-items: center;
         
         img {
             width: 100%;
         }
+    }
+
+    div {
+        button {
+            height: 38px;
+            width: 38px;
+            background-color: $quaternary-color;
+            color: $white;
+            border-radius: 50%;
+            border: 1px solid $quinary-color;
+            cursor: pointer;
+
+            &:hover, 
+            &.active {
+                outline: none;
+                background-color: $quaternary-color-darker;
+                border: 1px solid $quinary-color-darker;
+            }
+
+            &:disabled {
+                background-color: $quaternary-color-lighter;
+                border: 1px solid $quinary-color-lighter;
+            }
+        }
+
+
     }
 
 }

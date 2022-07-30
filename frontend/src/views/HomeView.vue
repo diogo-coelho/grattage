@@ -1,6 +1,14 @@
 <template>
     <div>
-        <header-component />
+        <header-component :user="user"/>
+        <main>
+            <nav>
+                <menu-component />
+            </nav>
+            <section>
+
+            </section>
+        </main>
     </div>
 </template>
 
@@ -8,10 +16,12 @@
 import { defineComponent, computed } from 'vue'
 import store from "@/store/index"
 import HeaderComponent from '@/components/header/HeaderComponent.vue'
+import MenuComponent from '@/components/menu/MenuComponent.vue'
 
 export default defineComponent({
     components: {
-        HeaderComponent
+        HeaderComponent,
+        MenuComponent
     },
     setup() {
         return {

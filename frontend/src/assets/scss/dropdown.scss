@@ -1,0 +1,45 @@
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/*                         Estilos de Dropdown                        */
+/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+
+.dropdown-wrapper {
+    position: relative;
+}
+
+.dropdown-container {
+    background-color: $white;
+    box-shadow: $box-shadow-2;
+    position: absolute;
+    min-width: 100px;
+    opacity: 0;
+    border: 1px solid $gray_2;
+    border-radius: 3px;
+    max-height: 0;
+    transition: 1s max-height, opacity ease-in;
+    overflow: hidden;
+
+    li {
+        padding: 8px 5px;
+        border-bottom: 1px solid $gray_3;
+        cursor: pointer;
+
+        &:hover, 
+        &:active,
+        &:focus {
+            background-color: $gray_2;
+            color: $primary-color;
+        }
+    }
+
+    li:last-child {
+        border-bottom: none;
+    }
+}
+
+.dropdown-container.active {
+    opacity: 1;
+    max-height: 500px;
+    transition: 1s max-height, opacity ease-out;
+}

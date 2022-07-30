@@ -32,6 +32,13 @@
         background-color: $primary-color-darker;
         transition: background-color 0.3s ease-in;
     }
+
+    &:disabled {
+        outline: none;
+        cursor: not-allowed;
+        background-color: $primary-color-lighter;
+        transition: background-color 0.3s ease-in;
+    }
 }
 
 @mixin input_default {

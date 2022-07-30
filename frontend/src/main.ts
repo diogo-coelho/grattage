@@ -4,8 +4,12 @@ import './registerServiceWorker'
 import router from './router'
 import Toast, { POSITION } from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import clickOutsideDirective from './directives/clickOutsideDirective';
 
 const app = createApp(App)
+
+// Directives
+app.directive('click-outside', clickOutsideDirective)
 
 // Toaster
 app.use(Toast, {

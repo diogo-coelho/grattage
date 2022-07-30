@@ -15,10 +15,11 @@
                 @click="clearInputStatus()"
                 @focus="handleClearInput($event)"
                 @keyup="handleClearInput($event)"
+                @input="setInputValue($event)"
                 @blur="setInputValue($event)" />
             <i :class="{ 
-                'i-custom-font-check': success ?? '',
-                'glyphicon-font-awesome-close' : message ?? '' }"></i>
+                'fa-icon-check': success ?? '',
+                'fa-icon-close' : message ?? '' }" />
         </div>
         <div v-if="message">
             <span class="message">{{ message }}</span>
@@ -63,6 +64,8 @@ export default defineComponent({
         const inputValue: Ref<string> = ref("")
         const message: Ref<string|null> = ref(null)
         const success: Ref<boolean> = ref(false)
+        const typingTime: Ref<ReturnType<typeof setTimeout>|undefined> = ref(undefined)
+        const typingTimeFinished = 750
 
         watch(() => props.inputError, () => {
             if (props.inputError?.inputType?.includes(props.inputName)) {
@@ -99,11 +102,16 @@ export default defineComponent({
          */
         function setInputValue (event: Event) : void {
             inputValue.value = (event.target as HTMLInputElement).value
-            if (validateInputValue()) {
-                emit("value", inputValue.value)
-            } else {
-                emit("value", undefined)
-            }
+            
+            clearTimeout(typingTime.value)
+            typingTime.value = setTimeout(() => {
+                if (validateInputValue()) {
+                    emit("value", inputValue.value)
+                } else {
+                    emit("value", undefined)
+                }
+                typingTime.value = undefined
+            }, typingTimeFinished)
         }
 
         /**
