@@ -18,8 +18,13 @@
                 @input="setInputValue($event)"
                 @blur="setInputValue($event)" />
             <i :class="{ 
+<<<<<<< HEAD
                 'fa-icon-check': success ?? '',
                 'fa-icon-close' : message ?? '' }" />
+=======
+                'i-custom-font-check': success ?? '',
+                'glyphicon-font-awesome-close' : message ?? '' }" />
+>>>>>>> 8b1c042159d1c8f5cbf7076437af9b3ff2d3e1a6
         </div>
         <div v-if="message">
             <span class="message">{{ message }}</span>
